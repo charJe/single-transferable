@@ -1,5 +1,7 @@
-// lib/app.ts
-import express = require('express');
+// src/app.ts
+import express from 'express'
+import mysql from 'mysql'
+import bodyParser from 'body-parser'
 
 // Create a new express application instance
 const app: express.Application = express();
