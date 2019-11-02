@@ -1,4 +1,4 @@
-defmodule Router do
+defmodule Backend.Router do
   use Plug.Router
 
   plug :match
