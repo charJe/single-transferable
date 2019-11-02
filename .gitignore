@@ -34,3 +34,7 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 
 .idea*
+
+# backend stuff
+*/node_modules
+*/build
