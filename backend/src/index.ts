@@ -1,15 +1,15 @@
 // src/app.ts
-import express from 'express'
-import mysql from 'mysql'
-import bodyParser from 'body-parser'
+import bodyParser = require("body-parser");
+import express = require("express");
+import mysql = require("mysql");
 
 // Create a new express application instance
-const app: express.Application = express();
+const app = express();
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
+app.get("/", (req, res) => {
+  res.send("Hello World!");
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+app.listen(3000, () => {
+  console.log("Example app listening on port 3000!");
 });
