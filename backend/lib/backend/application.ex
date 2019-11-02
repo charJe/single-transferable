@@ -8,7 +8,7 @@ defmodule Backend.Application do
 
   def start(_type, _args) do
     children = [
-      {Plug.Cowboy, scheme: :http, plug: Backend.HelloWorldPlug, options: [port: 8080]}
+      {Plug.Cowboy, scheme: :http, plug: Backend.Router, options: [port: 8080]}
       # Starts a worker by calling: Backend.Worker.start_link(arg)
       # {Backend.Worker, arg}
     ]
