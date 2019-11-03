@@ -26,7 +26,8 @@ const useStyles = makeStyles({
     },
     button: {
         color: theme.colors.background,         
-        backgroundColor: theme.colors.secondary,        
+        backgroundColor: theme.colors.secondary,
+        fontSize: "smaller",
     }
 });
 
@@ -49,11 +50,11 @@ const TopBar: React.FC<TopBarProps> = (props) => {
                 {props.name}
             </p>
             <div className={classes.rightButtonContainer}>
-                    <Link to="/create-poll">
-                        <Button variant="contained" size="small" className={classes.button}>
-                            New Poll
-                        </Button>
-                    </Link>
+                <Link to="/create-poll">
+                    <Button variant="contained" size="small" className={classes.button}>
+                        New Poll
+                    </Button>
+                </Link>
             </div>
         </div>
     );
