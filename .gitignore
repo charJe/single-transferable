@@ -22,13 +22,19 @@ frontend/build
 .env.development.local
 .env.test.local
 .env.production.local.DS_Store
-frontned/.env.local
-frontned/.env.development.local
-frontned/.env.test.local
-frontned/.env.production.local
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
+
+.idea*
+
+# backend stuff
+*/node_modules
+*/build
