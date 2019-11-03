@@ -28,7 +28,7 @@ export class BackendService {
                         prompt
                         choices
                     }
-                }`
++                }`
         }).then((result: Poll) => poll = result);
     }
 }
