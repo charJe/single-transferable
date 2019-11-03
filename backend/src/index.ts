@@ -2,7 +2,15 @@
 import bodyParser from "body-parser";
 import express from "express";
 import graphqlHTTP from "express-graphql";
+import { buildSchema } from "graphql";
 import mysql from "mysql";
+
+// Construct a schema, using GraphQL schema language
+const schema = buildSchema(`
+  type Query {
+    hello: String
+  }
+`);
 
 // Create a new express application instance
 const app = express();
@@ -25,6 +33,14 @@ db.connect((err) => {
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema,
+    graphiql: true,
+  }),
+);
 
 app.listen(3000, () => {
   console.log("Example app listening on port 3000!");
