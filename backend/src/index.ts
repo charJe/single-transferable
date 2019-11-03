@@ -75,21 +75,58 @@ const schema = buildSchema(`
 `);
 
 // Create a new express application instance
-const app = express();
+const app: express.Application = express();
 
-const db = mysql.createConnection({
+class Database {
+  connection: mysql.Connection;
+  constructor(config : any) {
+      this.connection = mysql.createConnection(config);
+  }
+
+  query(sql: string, args?: any): Promise<any> {
+    if (args) {
+      return new Promise((resolve, reject) => {
+        this.connection.query(sql, args, (err, rows) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(rows);
+        });
+      });
+    } else {
+      return new Promise((resolve, reject) => {
+        this.connection.query(sql, (err, rows) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(rows);
+        });
+      });
+    }
+  }
+
+  escape(input: string): string {
+    return this.connection.escape(input);
+  }
+
+  close(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.connection.end(err => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+  }
+}
+
+const db: Database = new Database({
   host: "localhost",
   user: "root",
   password: "",
   database: "single_transferable",
   insecureAuth: true
-});
-
-db.connect((err) => {
-  if (err) {
-    throw err;
-  }
-  console.log("Connected to database!");
 });
 
 class Poll {
@@ -102,20 +139,18 @@ class Choice {
   constructor(public id: number, public name: string, public description: string) {}
 }
 
-const getPoll = (args: {id: number}) => {
+const getPoll = async (args: {id: string}) => {
   const id = db.escape(args.id);
-  db.query(`SELECT accessor FROM polls WHERE accessor = ${id}`, (error, results, fields) => {
-    if (error) { throw error; } else { return results[0]; }
-  });
-
-  // TODO: lookup poll in database and return
+  const result: [any] = await db.query(`SELECT * FROM polls WHERE accessor = ${id}`);
+  console.log(result);
+  return result[0];
 };
 
 function randomString() : String {
   return [...Array(10)].map(i=>(~~(Math.random()*36)).toString(36)).join('')
 }
 
-const createPoll = (args: any) => {
+const createPoll = async (args: any) => {
   const input = args.input;
   const name: string = db.escape(input.name);
   const numWinners: number = input.numWinners;
@@ -124,14 +159,13 @@ const createPoll = (args: any) => {
   const endDate: boolean = input.endDate;
   const choices: Choice[] = input.choices;
 
-  db.query(`INSERT INTO Polls (name, prompt, winners_num, accessor, end_date, private)
-  VALUES (${name}, ${description}, ${numWinners}, ${randomString()}, ${endDate}, ${isPrivate})
-  `, (error, results, fields) => {
-    if (error)
-      throw error;
-    else
-      return results[0];
-  });
+  const result: [any] = await db.query(`INSERT INTO Polls
+                                 (name, prompt, winners_num, accessor, end_date, private) 
+                                 VALUES
+                                 (${name}, ${description}, ${numWinners}, ${randomString()}, ${endDate}, ${isPrivate})`);
+  
+  console.log(result);
+  return result[0];
 };
 
 const vote = (args: any) => {
@@ -153,5 +187,3 @@ app.use("/graphql", graphqlHTTP({
 }));
 
 app.listen(6699, () => console.log("Express GraphQL Server Now Running On localhost:4000/graphql"));
-
-db.end();
