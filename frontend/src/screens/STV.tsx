@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from '@material-ui/core/Button';
 import TopBar from '../components/TopBar';
 import {gs} from '../styles';
 // themes
@@ -14,6 +15,7 @@ export const STV: React.FC = () => {
                 <p className={classes.par}>
                     STV stands for Single Transferable Voting. It's p good, far superior to first past the poll.
                 </p>
+                
             </div>
         </div>
     );

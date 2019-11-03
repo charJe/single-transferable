@@ -110,7 +110,7 @@ export const Vote = () => {
                            className={classes.floatingLabelFocusStyle}
                            label="Email"
                            variant="filled" />
-                <Button variant="contained" className={classes.button}>
+                <Button variant="contained" className={classes.submitButton}>
                     Submit Vote
                 </Button>
             </div>
