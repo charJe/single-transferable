@@ -99,7 +99,7 @@ class Choice {
 
 const getPoll = (args: {id: number}) => {
   const id = db.escape(args.id);
-  db.query(`SELECT accessor FROM polls WHERE accessor = $id`, (error, results, fields) => {
+  db.query(`SELECT accessor FROM polls WHERE accessor = ${id}`, (error, results, fields) => {
     if (error) { throw error; } else { return results[0]; }
   });
 
@@ -107,6 +107,16 @@ const getPoll = (args: {id: number}) => {
 };
 
 const createPoll = (args: any) => {
+  const name = db.escape(args.name);
+  const prompt = db.escape(args.prompt);
+  const winners = db.escape(args.winners_num);
+  const end_date = db.escape(args.end_date);
+  const privatePoll = db.escape(args.private);
+  db.query(`Insert into polls(name,prompt,winners_num,end_date,private) values (${name},${prompt},${winners},${end_date},${privatePoll})`, function (err, rows, fields) {
+    if (err) throw err
+  
+    console.log(`${args} inserted`);
+  })
 
 };
 
@@ -129,3 +139,5 @@ app.use("/graphql", graphqlHTTP({
 }));
 
 app.listen(6699, () => console.log("Express GraphQL Server Now Running On localhost:4000/graphql"));
+
+db.end();
