@@ -38,6 +38,3 @@ frontend/yarn-error.log*
 # backend stuff
 */node_modules
 */build
-
-*venv/
-*~
