@@ -1,8 +1,8 @@
 // src/app.ts
-import bodyParser = require("body-parser");
-import express = require("express");
-import graphqlHTTP = require("express-graphql");
-import mysql = require("mysql");
+import bodyParser from "body-parser";
+import express from "express";
+import graphqlHTTP from "express-graphql";
+import mysql from "mysql";
 
 // Create a new express application instance
 const app = express();
