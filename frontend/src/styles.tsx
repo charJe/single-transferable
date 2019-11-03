@@ -9,10 +9,26 @@ export const gs = makeStyles({
     },
     content: {
         backgroundColor: theme.colors.background,
-        height: "92.3vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        color: theme.colors.text,
+        padding: "1em",
     },
-    par:{
+    par: {
         textAlign: "center",
         color: theme.colors.text,
+    },
+    button: {
+        backgroundColor: theme.colors.secondary,
+        color: theme.colors.background,
+        margin: "1em",
+    },
+    floatingLabelFocusStyle: {
+        color: "white",
+        backgroundColor: theme.colors.text,
+        margin: "1em",
     }
+    
 });

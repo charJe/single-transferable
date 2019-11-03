@@ -1,34 +1,38 @@
 import ApolloClient from "apollo-boost";
-import { gql } from "apollo-boost";
+import { gql} from "apollo-boost";
 
-
-interface Poll {
+const client = new ApolloClient({
+    uri: 'localhost',
+});
+interface Choice {
+    name: string,
+    info: string,
+    id: number
+}
+export interface Poll {
     name: string,
     prompt: string,
-    choices: [
-        {
-            name: string,
-            info: string
-        }
-    ]
+    choices: Choice[]
 }
-export class BackendService {
+export interface Vote {
+    id: number,
+    rank: number,
     
-    client = new ApolloClient({
-        uri: 'https://48p1r2roz4.sse.codesandbox.io',
-    });
-    
-    vote(accessor: string) {
-        let poll: Poll;
-        return this.client.query({
-            query: gql`
-                {
-                    ${accessor} {
-                        name
-                        prompt
-                        choices
-                    }
-+                }`
-        }).then((result: Poll) => poll = result);
-    }
 }
+export function getPoll(accessor: string) {
+    let poll: Poll;
+    return client.query({
+        query: gql`
+            {
+                polls(accessor:${accessor}) {
+                    name
+                    prompt
+                    choices
+                }
+            }`
+    }).then((result:any ) => poll = result);
+}
+export function sendVote() {
+    
+}
+
