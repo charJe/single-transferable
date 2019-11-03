@@ -5,14 +5,14 @@ import graphqlHTTP from "express-graphql";
 import { buildSchema } from "graphql";
 import mysql from "mysql";
 
-/* 
+/*
  * GraphQL schema for polls
  * Queries:
  *   - getPoll: (id: String) -> poll, returns the poll with the specified id, or null if no poll found
  *   - subscribe: (email: String), subscribes email to update when voting has finished
  * Mutations:
- *   - createPoll: (input: PollInput) -> String, creates a poll from input, and returns 
- *   - vote: 
+ *   - createPoll: (input: PollInput) -> String, creates a poll from input, and returns
+ *   - vote:
  * Poll:
  *   - id: String, unique value used to access poll through URL and lookup, required
  *   - name: String, name of poll, required
@@ -36,12 +36,12 @@ const schema = buildSchema(`
         name: String!
         prompt: String
         numWinners: Int!
-        private: Boolean!, 
+        private: Boolean!,
         endDate: Int!,
         choices: [Choice!]!
     },
     type Query {
-        getPoll(id: String!, emailHash: String): Poll 
+        getPoll(id: String!, emailHash: String): Poll
     },
     type Mutation {
         createPoll(input: PollInput): String
@@ -69,11 +69,9 @@ const schema = buildSchema(`
     }
 `);
 
-
 // Create a new express application instance
 const app = express();
 
-/*
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -88,19 +86,23 @@ db.connect((err) => {
   }
   console.log("Connected to database!");
 });
-*/
 
 class Poll {
-  constructor(public id: String, public name: String, public prompt: String, public numWinners: number, public private: Boolean, 
-    public endDate: number, public choices: Choice[]) {}
+  constructor(public id: string, public name: string, public prompt: string, public numWinners: number,
+              public isPrivate: boolean, public endDate: number, public choices: Choice[]) {}
+
 }
 
 class Choice {
-  constructor(public id: number, public name: String, public description: String) {}
+  constructor(public id: number, public name: string, public description: string) {}
 }
 
-const getPoll = (args: any) => {
-  const id = args.id;
+const getPoll = (args: {id: number}) => {
+  const id = db.escape(args.id);
+  db.query(`SELECT accessor FROM polls WHERE accessor = $id`, (error, results, fields) => {
+    if (error) { throw error; } else { return results[0]; }
+  });
+
   // TODO: lookup poll in database and return
 };
 
@@ -114,9 +116,9 @@ const vote = (args: any) => {
 
 // Root resolver
 const root = {
-  getPoll: getPoll,
-  createPoll: createPoll,
-  vote: vote
+  getPoll,
+  createPoll,
+  vote
 };
 
 // Create an express server and a GraphQL endpoint
