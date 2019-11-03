@@ -12,6 +12,12 @@ const schema = buildSchema(`
   }
 `);
 
+const root = {
+  hello: () => {
+    return "Hello world!";
+  },
+};
+
 // Create a new express application instance
 const app = express();
 
@@ -31,13 +37,14 @@ db.connect((err) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("I <3 Anime");
 });
 
 app.use(
   "/graphql",
   graphqlHTTP({
     schema,
+    rootValue: root,
     graphiql: true,
   }),
 );
