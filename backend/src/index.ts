@@ -41,12 +41,12 @@ const schema = buildSchema(`
         choices: [Choice!]!
     },
     type Query {
-        getPoll(id: String!): Poll 
+        getPoll(id: String!, emailHash: String): Poll 
     },
     type Mutation {
         createPoll(input: PollInput): String
         vote(pollId: String!, votes: [Vote]!, emailHash: String)
-        subscribe(pollId: String!, )
+        subscribe(pollId: String!, email: String!, emailHash: String)
     },
     type Poll {
         id: String!
@@ -56,7 +56,6 @@ const schema = buildSchema(`
         private: Boolean!
         endDate: Int!
         choices: [Choice!]!
-        users: [User!]
     },
     type User {
         id: String!
@@ -90,6 +89,15 @@ db.connect((err) => {
   console.log("Connected to database!");
 });
 */
+
+class Poll {
+  constructor(public id: String, public name: String, public prompt: String, public numWinners: number, public private: Boolean, 
+    public endDate: number, public choices: Choice[]) {}
+}
+
+class Choice {
+  constructor(public id: number, public name: String, public description: String) {}
+}
 
 const getPoll = (args: any) => {
   const id = args.id;
