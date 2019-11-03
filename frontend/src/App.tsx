@@ -1,26 +1,27 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Switch, Route, Link, Redirect} from "react-router-dom";
+import { makeStyles } from '@material-ui/core/styles';
+// theme
+import {defaultTheme as theme} from './themes';
+
+// screens
+import {STV} from "./screens/STV";
+import {CreatePoll} from "./screens/CreatePoll";
+import {Vote} from "./screens/Vote";
 
 const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    
+    return (
+        <BrowserRouter>
+            <Switch>
+                <Route exact path="/STV" component={STV} />
+                <Route exact path="/create-poll" component={CreatePoll}/>
+                <Route path="/vote/:accessor" children={<Vote />} />
+                <Route exact path="/" render={() => (<Redirect to="/STV" />)} />
+                <Route exact path="/vote" render={() => (<Redirect to="/STV" />)} />
+            </Switch>
+        </BrowserRouter>
+    );
 }
 
 export default App;
