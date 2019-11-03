@@ -45,8 +45,8 @@ const schema = buildSchema(`
     },
     type Mutation {
         createPoll(input: PollInput): String
-        vote(pollId: String!, votes: [Vote]!, emailHash: String)
-        subscribe(pollId: String!, email: String!, emailHash: String)
+        vote(pollId: String!, votes: [Choice]!, emailHash: String): Boolean!
+        subscribe(pollId: String!, email: String!, emailHash: String): Boolean!
     },
     type Poll {
         id: String!
