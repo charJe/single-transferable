@@ -2,7 +2,7 @@
 import bodyParser from "body-parser";
 import express from "express";
 import graphqlHTTP from "express-graphql";
-import { buildSchema } from "graphql";
+import { buildSchema, isInputObjectType } from "graphql";
 import mysql from "mysql";
 
 /*
@@ -36,16 +36,16 @@ const schema = buildSchema(`
         name: String!
         prompt: String
         numWinners: Int!
-        private: Boolean!,
+        isPrivate: Boolean!,
         endDate: Int!,
-        choices: [Choice!]!
+        choices: [ChoiceInput!]!
     },
     type Query {
         getPoll(id: String!, emailHash: String): Poll
     },
     type Mutation {
-        createPoll(input: PollInput): String
-        vote(pollId: String!, votes: [Choice]!, emailHash: String): Boolean!
+        createPoll(input: PollInput): Poll
+        vote(pollId: String!, votes: [ChoiceInput]!, emailHash: String): Boolean!
         subscribe(pollId: String!, email: String!, emailHash: String): Boolean!
     },
     type Poll {
@@ -53,7 +53,7 @@ const schema = buildSchema(`
         name: String!
         prompt: String
         numWinners: Int!
-        private: Boolean!
+        isPrivate: Boolean!
         endDate: Int!
         choices: [Choice!]!
     },
@@ -66,7 +66,12 @@ const schema = buildSchema(`
         id: Int
         name: String!
         description: String
-    }
+    },
+    input ChoiceInput {
+      id: Int
+      name: String!
+      description: String
+  }
 `);
 
 // Create a new express application instance
@@ -106,18 +111,27 @@ const getPoll = (args: {id: number}) => {
   // TODO: lookup poll in database and return
 };
 
-const createPoll = (args: any) => {
-  const name = db.escape(args.name);
-  const prompt = db.escape(args.prompt);
-  const winners = db.escape(args.winners_num);
-  const end_date = db.escape(args.end_date);
-  const privatePoll = db.escape(args.private);
-  db.query(`Insert into polls(name,prompt,winners_num,end_date,private) values (${name},${prompt},${winners},${end_date},${privatePoll})`, function (err, rows, fields) {
-    if (err) throw err
-  
-    console.log(`${args} inserted`);
-  })
+function randomString() : String {
+  return [...Array(10)].map(i=>(~~(Math.random()*36)).toString(36)).join('')
+}
 
+const createPoll = (args: any) => {
+  const input = args.input;
+  const name: string = db.escape(input.name);
+  const numWinners: number = input.numWinners;
+  const description: string = input.description;
+  const isPrivate: boolean = input.isPrivate;
+  const endDate: boolean = input.endDate;
+  const choices: Choice[] = input.choices;
+
+  db.query(`INSERT INTO Polls (name, prompt, winners_num, accessor, end_date, private)
+  VALUES (${name}, ${description}, ${numWinners}, ${randomString()}, ${endDate}, ${isPrivate})
+  `, (error, results, fields) => {
+    if (error)
+      throw error;
+    else
+      return results[0];
+  });
 };
 
 const vote = (args: any) => {
