@@ -38,14 +38,14 @@ const schema = buildSchema(`
         numWinners: Int!
         private: Boolean!,
         endDate: Int!,
-        choices: [Choice!]!
+        choices: [ChoiceInput!]!
     },
     type Query {
         getPoll(id: String!, emailHash: String): Poll
     },
     type Mutation {
         createPoll(input: PollInput): String
-        vote(pollId: String!, votes: [Choice]!, emailHash: String): Boolean!
+        vote(pollId: String!, votes: [ChoiceInput]!, emailHash: String): Boolean!
         subscribe(pollId: String!, email: String!, emailHash: String): Boolean!
     },
     type Poll {
@@ -66,7 +66,12 @@ const schema = buildSchema(`
         id: Int
         name: String!
         description: String
-    }
+    },
+    input ChoiceInput {
+      id: Int
+      name: String!
+      description: String
+  }
 `);
 
 // Create a new express application instance
