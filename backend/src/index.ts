@@ -7,35 +7,69 @@ import mysql from "mysql";
 
 /* 
  * GraphQL schema for polls
- * getPoll: accessor -> poll TODO: return a fragment of poll instead
- * 
+ * Queries:
+ *   - getPoll: (id: String) -> poll, returns the poll with the specified id, or null if no poll found
+ *   - subscribe: (email: String), subscribes email to update when voting has finished
+ * Mutations:
+ *   - createPoll: (input: PollInput) -> String, creates a poll from input, and returns 
+ *   - vote: 
+ * Poll:
+ *   - id: String, unique value used to access poll through URL and lookup, required
+ *   - name: String, name of poll, required
+ *   - prompt: String, poll prompt, optional
+ *   - numWinners: Int, number of possible winners, required
+ *   - private: Boolean, publicity of poll, required
+ *   - endDate: Int, end date of poll in unix time, required
+ *   - choices: [Choice!], list of possible choices for poll, required
+ *   - users: [User!], list of users invited to poll, only available for private polls
+ * User:
+ *   - id: String, unique value for user, required
+ *   - email: String, email address of user, required
+ *   - ip: String, user's IP address, required
+ * Choice:
+ *   - id: Int, auto-assigned id for the choice if choices are ordered, optional
+ *   - name: String, name of choice, required
+ *   - descripton: String, description of choice, required
  */
 const schema = buildSchema(`
-    type Query {
-        getPoll(accessor: String!): Poll 
+    input PollInput {
+        name: String!
+        prompt: String
+        numWinners: Int!
+        private: Boolean!, 
+        endDate: Int!,
+        choices: [Choice!]!
     },
-    type mutation {
-      createPoll(name: String!): Int 
+    type Query {
+        getPoll(id: String!): Poll 
+    },
+    type Mutation {
+        createPoll(input: PollInput): String
+        vote(pollId: String!, votes: [Vote]!, emailHash: String)
+        subscribe(pollId: String!, )
     },
     type Poll {
-      id: Int!
-      name: String!
-      prompt: String
-      numWinners: Int!
-      uniqueAccessor: String!
-      private: Boolean!
-      endDate: Int!
+        id: String!
+        name: String!
+        prompt: String
+        numWinners: Int!
+        private: Boolean!
+        endDate: Int!
+        choices: [Choice!]!
+        users: [User!]
     },
     type User {
-      id: Int!
-      uniqueAccessor: String!
-      email: String!
-      ip: String!
+        id: String!
+        email: String!
+        ip: String!
     },
     type Choice {
-
+        id: Int
+        name: String!
+        description: String
     }
 `);
+
 
 // Create a new express application instance
 const app = express();
@@ -57,60 +91,24 @@ db.connect((err) => {
 });
 */
 
-const coursesData = [
-  {
-      id: 1,
-      title: "The Complete Node.js Developer Course",
-      author: "Andrew Mead, Rob Percival",
-      description: "Learn Node.js by building real-world applications with Node, Express, MongoDB, Mocha, and more!",
-      topic: "Node.js",
-      url: "https://codingthesmartway.com/courses/nodejs/"
-  },
-  {
-      id: 2,
-      title: "Node.js, Express & MongoDB Dev to Deployment",
-      author: "Brad Traversy",
-      description: "Learn by example building & deploying real-world Node.js applications from absolute scratch",
-      topic: "Node.js",
-      url: "https://codingthesmartway.com/courses/nodejs-express-mongodb/"
-  },
-  {
-      id: 3,
-      title: "JavaScript: Understanding The Weird Parts",
-      author: "Anthony Alicea",
-      description: "An advanced JavaScript course for everyone! Scope, closures, prototypes, this, build your own framework, and more.",
-      topic: "JavaScript",
-      url: "https://codingthesmartway.com/courses/understand-javascript/"
-  }
-];
-
-const getCourse = (args: any) => {
+const getPoll = (args: any) => {
   const id = args.id;
-  return coursesData.filter((course) => {
-      return course.id === id;
-  })[0];
+  // TODO: lookup poll in database and return
 };
 
-const getCourses = (args: any) => {
-  if (args.topic) {
-      const topic = args.topic;
-      return coursesData.filter((course) => course.topic === topic);
-  } else {
-      return coursesData;
-  }
+const createPoll = (args: any) => {
+
 };
 
-const lookupPoll = (args: any) => {
-  if (args.pollId) {
+const vote = (args: any) => {
 
-  }
-}
+};
 
 // Root resolver
 const root = {
-  course: getCourse,
-  courses: getCourses,
-
+  getPoll: getPoll,
+  createPoll: createPoll,
+  vote: vote
 };
 
 // Create an express server and a GraphQL endpoint
@@ -120,4 +118,4 @@ app.use("/graphql", graphqlHTTP({
   graphiql: true
 }));
 
-app.listen(4000, () => console.log("Express GraphQL Server Now Running On localhost:4000/graphql"));
+app.listen(6699, () => console.log("Express GraphQL Server Now Running On localhost:4000/graphql"));
